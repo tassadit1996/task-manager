@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import User from "../models/userModel";
+import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
-export const signUp = async (req, res) => {
+export const register = async (req, res) => {
 	try {
 		const existingUser = await User.findOne({ email: req.body.email });
 
@@ -31,7 +31,7 @@ export const signUp = async (req, res) => {
 	}
 };
 
-export const signIn = async (req, res) => {
+export const login = async (req, res) => {
 	const user = await User.findOne({ email: req.body.email });
 	if (!user) {
 		return res.status(404).json({ error: "user not found" });
@@ -45,12 +45,37 @@ export const signIn = async (req, res) => {
 		return res.status(404).json({ error: "Password is not correct" });
 	}
 
-	const token = jwt.sign(
-		{ id: user._id, name: user.name },
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-	);
+	const token = jwt.sign({ id: user._id, name: user.name }, "secret");
 
 	res.setHeader("Set-Cookie", `jwt=${token}; path=/; HttpOnly`);
 
 	res.status(200).json({ message: "Login successful" });
+};
+
+export const logout = (req, res) => {
+	res.cookie("jwt", "", { maxAge: 0 });
+
+	res.status(200).json({ message: "Logout successful" });
+};
+
+export const getUser = async (req, res) => {
+	try {
+		const cookie = req.cookies["jwt"];
+		const claims = jwt.verify(cookie, "secret", {
+			ignoreExpiration: false,
+		});
+
+		if (!claims) {
+			return res.status(401).json({ message: "Not authenticated" });
+		}
+		console.log("User ID from claims:", claims.id);
+		const user = await User.findOne({ _id: claims.id });
+		console.log("Fetched user:", user);
+
+		const { password, ...data } = await user.toJSON();
+
+		res.status(200).json(data);
+	} catch (error) {
+		return res.status(401).json({ message: "Not authenticated" });
+	}
 };
