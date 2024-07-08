@@ -62,10 +62,10 @@ function TaskManagerMain() {
 								<>
 									<a href="/login">
 										<button
-											className={`block sm:w-32 w-full rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 px-9 py-3 text-sm font-medium text-white transition   focus:outline-none  `}
+											className={`block w-full rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 px-9 py-3 text-sm font-medium text-white transition   focus:outline-none  `}
 											type="button"
 										>
-											Sign In
+											Connexion
 										</button>
 									</a>
 
@@ -73,11 +73,11 @@ function TaskManagerMain() {
 										<button
 											className={`block rounded-lg border border-blue-500 
                text-blue-500 px-9 py-3 text-sm font-medium 
-               transition focus:outline-none sm:w-32 w-full
+               transition focus:outline-none w-full
                to-blue-500 hover:to-transparent hover:from-blue-500`}
 											type="button"
 										>
-											Sign Up
+											Inscription
 										</button>
 									</a>
 								</>
