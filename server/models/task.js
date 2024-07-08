@@ -21,9 +21,7 @@ const taskSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
-	completionDate: {
-		type: Date,
-	},
+
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",

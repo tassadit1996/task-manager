@@ -46,11 +46,12 @@ export const updateTask = async (req, res) => {
 			task.description = req.body.description;
 		}
 
-		if (req.body.status) {
-			task.status = req.body.status;
-			task.completionDate = Date.now();
+		if (req.body.tag === "completed") {
+			task.status = true;
 		}
-
+		if (req.body.tag === "incompleted") {
+			task.status = false;
+		}
 		await task.save();
 		res.status(200).json({
 			message: "mis à jour effectuée avec succès",

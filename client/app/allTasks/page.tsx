@@ -77,18 +77,16 @@ const AllTasksPage: React.FC = () => {
 
 	const updateTaskStatus = async (
 		taskId: string,
-		status: { status: boolean }
+		data: { status: boolean; tag: string }
 	) => {
 		try {
-			const res = await ToggleTaskCompleted(taskId, {
-				status: status as any,
-			});
+			const res = await ToggleTaskCompleted(taskId, data);
 			if (res.status === 200) {
 				const updatedTasks = tasks!.map((task) =>
 					task._id === taskId
 						? {
 								...task,
-								status,
+								status: data.status,
 						  }
 						: task
 				);

@@ -11,7 +11,10 @@ export interface TaskProps {
 
 const Task: React.FC<{
 	task: TaskProps;
-	updateTaskStatus: (id: string, data: boolean) => void;
+	updateTaskStatus: (
+		id: string,
+		data: { status: boolean; tag: string }
+	) => void;
 	handleDeleteTask: (id: string) => void;
 	handleUpdateTask: (
 		id: string,
@@ -94,9 +97,19 @@ const Task: React.FC<{
 							<input
 								type="checkbox"
 								checked={isCompleted}
-								onChange={() =>
-									updateTaskStatus(task._id, !isCompleted)
-								}
+								onChange={() => {
+									if (isCompleted) {
+										updateTaskStatus(task._id, {
+											status: false,
+											tag: "incompleted",
+										});
+									} else {
+										updateTaskStatus(task._id, {
+											status: true,
+											tag: "completed",
+										});
+									}
+								}}
 								className="hidden"
 							/>
 							<div
