@@ -1,21 +1,21 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { login } from "../api/api";
+import withAuth from "../utils/withAuth";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 import { FaRegEnvelope } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { signIn } from "../api/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faList } from "@fortawesome/free-solid-svg-icons";
 
 interface LoginProps {
 	onLogin: (email: string, password: string) => void;
 }
 
-const page: React.FC<LoginProps> = () => {
+const LoginPage: React.FC<LoginProps> = () => {
 	const router = useRouter();
 
 	const initialValues = {
@@ -24,42 +24,46 @@ const page: React.FC<LoginProps> = () => {
 	};
 
 	const validationSchema = Yup.object({
-		email: Yup.string().email("Invalid email address").required("Required"),
-		password: Yup.string().required("Required"),
+		email: Yup.string().email("email invalid").required("champs requis"),
+		password: Yup.string().required("champs requis"),
 	});
 
 	const onSubmit = async (values: typeof initialValues) => {
 		const { email, password } = values;
 
 		try {
-			const response = await signIn(email, password);
+			const response = (await login(email, password)) as any;
 
 			if (response.status === 200) {
-				toast.success("Login successful!");
-				router.push("/tasks");
+				router.push("/allTasks");
 			} else {
-				toast.error("Login failed!");
+				console.error("Connexion échouée");
 			}
 		} catch (error) {
-			console.error("Error during login:", error);
-			toast.error("An error occurred during login.");
+			console.error("Erreur lors de la connexion", error);
 		}
-	};
-
-	const handleSignUp = () => {
-		router.push("/signUp");
 	};
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
 			<main className="flex flex-col items-center justify-center w-full flex-1 px-10 text-center md:flex-row md:px-20">
-				<div>
-					<ToastContainer />
-				</div>
 				<div className="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row w-full md:w-2/3 max-w-4xl">
 					<div className="w-full md:w-3/5 p-5">
-						<div className="text-left font-bold">
-							<span className="text-blue-500">Task-</span>Manager
+						<div className="text-center  sm:text-left mb-7 sm:mb-0">
+							<a href="/">
+								<div className="flex gap-2 items-center sm:justify-start justify-center">
+									<FontAwesomeIcon
+										className={`bg-gradient-to-br from-blue-500 to-blue-500 p-3 text-sm h-[20px] text-white rounded-md`}
+										icon={faList}
+									/>
+									<span className="text-2xl font-light">
+										<span className="font-bold text-blue-500">
+											Task-
+										</span>
+										Manager
+									</span>
+								</div>
+							</a>
 						</div>
 						<div className="py-10">
 							<Formik
@@ -122,12 +126,12 @@ const page: React.FC<LoginProps> = () => {
 							Remplissez vos informations personnelles pour vous
 							inscrire.
 						</p>
-						<Link
-							href="signUp"
+						<a
+							href="register"
 							className="border-2 border-white rounded-full px-8 py-2 inline-block font-semibold hover:bg-white hover:text-blue-500 text-white"
 						>
 							S'inscrire
-						</Link>
+						</a>
 					</div>
 				</div>
 			</main>
@@ -135,4 +139,4 @@ const page: React.FC<LoginProps> = () => {
 	);
 };
 
-export default page;
+export default withAuth(LoginPage);

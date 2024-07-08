@@ -27,23 +27,6 @@ export const getTasks = async (req, res) => {
 	}
 };
 
-export const getCompletedTasks = async (req, res) => {
-	try {
-		const tasks = await Task.find({ user: req.user._id, status: true });
-		res.status(200).send(tasks);
-	} catch (error) {
-		res.status(500).json({ error: error.message });
-	}
-};
-
-export const getIncompletedTasks = async (req, res) => {
-	try {
-		const tasks = await Task.find({ user: req.user._id, status: false });
-		res.status(200).send(tasks);
-	} catch (error) {
-		res.status(500).json({ error: error.message });
-	}
-};
 export const updateTask = async (req, res) => {
 	try {
 		const task = await Task.findOne({

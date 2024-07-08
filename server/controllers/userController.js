@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-
+import "dotenv/config";
 export const register = async (req, res) => {
 	try {
 		const existingUser = await User.findOne({ email: req.body.email });
@@ -45,7 +45,10 @@ export const login = async (req, res) => {
 		return res.status(404).json({ error: "Password is not correct" });
 	}
 
-	const token = jwt.sign({ id: user._id, name: user.name }, "secret");
+	const token = jwt.sign(
+		{ id: user._id, name: user.name },
+		process.env.JWT_TOKEN
+	);
 
 	res.setHeader("Set-Cookie", `jwt=${token}; path=/; HttpOnly`);
 
@@ -61,7 +64,7 @@ export const logout = (req, res) => {
 export const getUser = async (req, res) => {
 	try {
 		const cookie = req.cookies["jwt"];
-		const claims = jwt.verify(cookie, "secret", {
+		const claims = jwt.verify(cookie, process.env.JWT_TOKEN, {
 			ignoreExpiration: false,
 		});
 
